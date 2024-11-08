@@ -1,24 +1,30 @@
 #include <iostream>
-#include "ThreadManager.hpp"
-#include <cstdlib>
+#include <chrono>
+#include "SyncPrimitives.hpp"
 
-using namespace std;
-
-int main (int argc, char *argv[]) {
-    if (argc!=4){
-        cout << "Usage: ./1task <number of threads> <number of iterations> <number of elements in array>" << endl;
+int main(int argc, char* argv[]) {
+    if (argc < 4) {
+        std::cerr << "Usage: " << argv[0] << " <quantityThreads> <quantityChar> <syncPrimitiveType>" << std::endl;
         return 1;
     }
 
-    int threadCount = atoi(argv[1]);
-    int charCount = atoi(argv[2]);
-    int syncType = atoi(argv[3]);
+    int quantityThreads = std::stoi(argv[1]);
+    int quantityChar = std::stoi(argv[2]);
+    int syncPrimitiveType = std::stoi(argv[3]);
 
-    if (threadCount<=0 || charCount<=0){
-        cout << "Numbers of threads and char must be positive" << endl;
-    }
+    SyncPrimitives syncPrimitives;
 
-    double executionTime = ThreadManager::measureExecutionTime(threadCount, charCount, syncType);
-    cout << "Execution time: " << executionTime << endl;
+    // Начало замера времени
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Запуск выбранного синхронизационного примитива
+    syncPrimitives.CreateThreads(quantityThreads, quantityChar, syncPrimitiveType);
+
+    // Конец замера времени
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
+
     return 0;
 }
